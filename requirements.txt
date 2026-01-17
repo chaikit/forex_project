@@ -1,4 +1,4 @@
 MetaTrader5
 pandas
 matplotlib
-datetime
+numpy
