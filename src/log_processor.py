@@ -9,10 +9,11 @@ class LogProcessor:
     Component for processing raw data into CSV reports, visual graphs, 
     and detailed performance summaries with comparison.
     """
-    def __init__(self, raw_data, start_hour=None, close_hour=None, output_dir="reports"):
+    def __init__(self, raw_data, start_hour=None, close_hour=None, tp_multiplier=1.1, output_dir="reports"):
         self.data = raw_data
         self.start_hour = start_hour
         self.close_hour = close_hour
+        self.tp_multiplier = tp_multiplier
         self.output_dir = output_dir
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
@@ -86,10 +87,8 @@ class LogProcessor:
         non_forced = df[~df['comment'].str.contains("Close", na=False)]
         avg_duration = (non_forced['exit_time'] - non_forced['entry_time']).mean().total_seconds() / 3600 if not non_forced.empty else 0
         
-        # Risk Reward (Strategy Settings: SL=1.0, TP=1.1)
-        # ตั้งแต่โค้ดระบุ TP = distance_price * 1.1 และ SL = distance_price
-        # ดังนั้น Risk:Reward คือ 1 : 1.1
-        rr_display = "1:1.1"
+        # Risk Reward
+        rr_display = f"1:{self.tp_multiplier}"
         
         # Drawdown and Recovery
         df_copy = df.copy().reset_index(drop=True)
@@ -130,17 +129,17 @@ class LogProcessor:
         df['entry_time'] = pd.to_datetime(df['entry_time'])
         df['exit_time'] = pd.to_datetime(df['exit_time'])
         
-        # Thai Time Calculation (+5 hours)
-        def to_thai(h):
-            if h is None: return "N/A"
-            thai_h = (h + 5) % 24
-            return f"{h:02d}:00 ({thai_h:02d}:00 Thai)"
+        # Calculate Thai Time (Server + 5 hours)
+        def to_thai_time(server_hour):
+            if server_hour is None: return "N/A"
+            thai_hour = (server_hour + 5) % 24
+            return f"{server_hour:02d}:00 ({thai_hour:02d}:00 Thai)"
 
         report = {
             "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "Strategy Settings": {
-                "Trigger Setup Hour": to_thai(self.start_hour),
-                "Forced Close Hour": to_thai(self.close_hour)
+                "Trigger Setup Hour": to_thai_time(self.start_hour),
+                "Forced Close Hour": to_thai_time(self.close_hour)
             },
             "Overall": self.calculate_metrics(df),
             "SetUp1 (61.8%)": self.calculate_metrics(df[df['setup'].str.contains("61.8")]),

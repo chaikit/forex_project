@@ -18,8 +18,8 @@ class LondonNYReversalStrategy:
         self.fibo_levels = [0.618, 0.786]
         
         # Time Settings
-        self.start_hour = 14    # เวลาเริ่มวางแผนเทรด 5 โมงเย็น
-        self.close_hour = 21     # เวลาปิดออเดอร์ทั้งหมด ตี 2
+        self.start_hour = 13    # เวลาเริ่มวางแผนเทรด 6 โมงเย็น
+        self.close_hour = 24     # เวลาปิดออเดอร์ทั้งหมด ตี 5
         
         # Connection Check
         if not mt5.initialize():
@@ -189,12 +189,12 @@ class LondonNYReversalStrategy:
         
         if direction == "BUY":
             order_type = mt5.ORDER_TYPE_BUY_LIMIT
-            sl = entry_price - dist_price
-            tp = entry_price + (dist_price * 1.1)
+            sl = entry_price - (dist_price * 0.3)
+            tp = entry_price + (dist_price * 1.2)
         else:
             order_type = mt5.ORDER_TYPE_SELL_LIMIT
-            sl = entry_price + dist_price
-            tp = entry_price - (dist_price * 1.1)
+            sl = entry_price + (dist_price * 0.3)
+            tp = entry_price - (dist_price * 1.2)
 
         request = {
             "action": mt5.TRADE_ACTION_PENDING,
