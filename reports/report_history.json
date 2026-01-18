@@ -1,0 +1,94 @@
+[
+    {
+        "Timestamp": "2026-01-18 10:34:01",
+        "Strategy Settings": {
+            "Trigger Setup Hour": "14:00",
+            "Forced Close Hour": "21:00"
+        },
+        "Overall": {
+            "Total Orders": 19,
+            "WinRate (%)": 21.05,
+            "Normal Close (%)": 68.42,
+            "Forced Close (%)": 31.58,
+            "Avg Trigger Hour": "15:31",
+            "Avg TP/SL Hour": "17:34",
+            "Avg Duration (Hrs)": 2.04,
+            "Risk Per Reward": "1:1.1",
+            "Max Drawdown (%)": 7.31,
+            "Max Recovery (Days)": 6,
+            "Expected Value": -2.79
+        },
+        "SetUp1 (61.8%)": {
+            "Total Orders": 10,
+            "WinRate (%)": 20.0,
+            "Normal Close (%)": 70.0,
+            "Forced Close (%)": 30.0,
+            "Avg Trigger Hour": "14:47",
+            "Avg TP/SL Hour": "17:26",
+            "Avg Duration (Hrs)": 2.29,
+            "Risk Per Reward": "1:1.1",
+            "Max Drawdown (%)": 5.9,
+            "Max Recovery (Days)": 2,
+            "Expected Value": -3.47
+        },
+        "SetUp2 (78.6%)": {
+            "Total Orders": 9,
+            "WinRate (%)": 22.22,
+            "Normal Close (%)": 66.67,
+            "Forced Close (%)": 33.33,
+            "Avg Trigger Hour": "16:24",
+            "Avg TP/SL Hour": "17:43",
+            "Avg Duration (Hrs)": 1.75,
+            "Risk Per Reward": "1:1.1",
+            "Max Drawdown (%)": 7.31,
+            "Max Recovery (Days)": 6,
+            "Expected Value": -2.02
+        }
+    },
+    {
+        "Timestamp": "2026-01-18 10:37:05",
+        "Strategy Settings": {
+            "Trigger Setup Hour": "14:00 (19:00 Thai)",
+            "Forced Close Hour": "21:00 (02:00 Thai)"
+        },
+        "Overall": {
+            "Total Orders": 19,
+            "WinRate (%)": 21.05,
+            "Normal Close (%)": 68.42,
+            "Forced Close (%)": 31.58,
+            "Avg Trigger Hour": "15:31",
+            "Avg TP/SL Hour": "17:34",
+            "Avg Duration (Hrs)": 2.04,
+            "Risk Per Reward": "1:1.1",
+            "Max Drawdown (%)": 7.31,
+            "Max Recovery (Days)": 6,
+            "Expected Value": -2.79
+        },
+        "SetUp1 (61.8%)": {
+            "Total Orders": 10,
+            "WinRate (%)": 20.0,
+            "Normal Close (%)": 70.0,
+            "Forced Close (%)": 30.0,
+            "Avg Trigger Hour": "14:47",
+            "Avg TP/SL Hour": "17:26",
+            "Avg Duration (Hrs)": 2.29,
+            "Risk Per Reward": "1:1.1",
+            "Max Drawdown (%)": 5.9,
+            "Max Recovery (Days)": 2,
+            "Expected Value": -3.47
+        },
+        "SetUp2 (78.6%)": {
+            "Total Orders": 9,
+            "WinRate (%)": 22.22,
+            "Normal Close (%)": 66.67,
+            "Forced Close (%)": 33.33,
+            "Avg Trigger Hour": "16:24",
+            "Avg TP/SL Hour": "17:43",
+            "Avg Duration (Hrs)": 1.75,
+            "Risk Per Reward": "1:1.1",
+            "Max Drawdown (%)": 7.31,
+            "Max Recovery (Days)": 6,
+            "Expected Value": -2.02
+        }
+    }
+]

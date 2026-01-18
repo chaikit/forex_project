@@ -13,6 +13,8 @@ class LondonNYBacktester:
         self.trades = []
         self.magic_number = 123456
         self.fibo_levels = [0.618, 0.786]
+        self.start_hour = 14
+        self.close_hour = 21
         
         if not mt5.initialize():
             print("MT5 Initialization failed", flush=True)
@@ -52,8 +54,8 @@ class LondonNYBacktester:
             day_data = df[df['date'] == date].copy()
             if len(day_data) < 10: continue
 
-            # Logic at 19:00
-            range_data = day_data[(day_data['time'].dt.hour >= 8) & (day_data['time'].dt.hour < 19)]
+            # Logic at start_hour
+            range_data = day_data[(day_data['time'].dt.hour >= 9) & (day_data['time'].dt.hour < self.start_hour)]
             if range_data.empty: continue
 
             max_idx = range_data['high'].idxmax()
@@ -77,15 +79,15 @@ class LondonNYBacktester:
             start_search_idx = last_idx_before_20 + 1
             if start_search_idx >= len(df): continue
             
-            # Find 02:00 limit (Next day)
-            force_close_time = datetime.combine(date + timedelta(days=1), time(2, 0))
+            # Find close_hour limit (Same day)
+            force_close_time = datetime.combine(date, time(self.close_hour, 0))
             future_data = df.iloc[start_search_idx:]
             
             if low_time < high_time: # BUY SETUP
                 for fibo in self.fibo_levels:
                     entry_price = round(high_price - (price_range * fibo), 5)
                     sl_price = entry_price - distance_price
-                    tp_price = entry_price + (distance_price * 0.5)
+                    tp_price = entry_price + (distance_price * 1.1)
                     
                     for idx, row in future_data.iterrows():
                         if row['time'] >= force_close_time: break # Order Expired
@@ -98,27 +100,27 @@ class LondonNYBacktester:
                             for t_idx, t_row in trade_data.iterrows():
                                 if t_row['time'] >= force_close_time:
                                     # Forced Close at 02:00
-                                    self.record_trade(entry_time, "BUY", entry_price, t_row['open'], (t_row['open'] - entry_price) / distance_price, "02:00 Close")
+                                    self.record_trade(entry_time, t_row['time'], "BUY", f"SetUp {'1' if fibo == 0.618 else '2'} ({fibo*100}%)", entry_price, t_row['open'], (t_row['open'] - entry_price) / distance_price, "02:00 Close")
                                     closed = True
                                     break
                                 elif t_row['low'] <= sl_price:
-                                    self.record_trade(entry_time, "BUY", entry_price, sl_price, -1.0, f"Fibo {fibo} SL")
+                                    self.record_trade(entry_time, t_row['time'], "BUY", f"SetUp {'1' if fibo == 0.618 else '2'} ({fibo*100}%)", entry_price, sl_price, -1.0, "SL")
                                     closed = True
                                     break
                                 elif t_row['high'] >= tp_price:
-                                    self.record_trade(entry_time, "BUY", entry_price, tp_price, 1.0, f"Fibo {fibo} TP")
+                                    self.record_trade(entry_time, t_row['time'], "BUY", f"SetUp {'1' if fibo == 0.618 else '2'} ({fibo*100}%)", entry_price, tp_price, 1.1, "TP")
                                     closed = True
                                     break
                             if not closed and not trade_data.empty: # Fallback if end of history
                                 last_row = trade_data.iloc[-1]
-                                self.record_trade(entry_time, "BUY", entry_price, last_row['close'], (last_row['close'] - entry_price) / distance_price, "End of History")
+                                self.record_trade(entry_time, last_row['time'], "BUY", f"SetUp {'1' if fibo == 0.618 else '2'} ({fibo*100}%)", entry_price, last_row['close'], (last_row['close'] - entry_price) / distance_price, "End of History")
                             break
             
             elif high_time < low_time: # SELL SETUP
                 for fibo in self.fibo_levels:
                     entry_price = round(low_price + (price_range * fibo), 5)
                     sl_price = entry_price + distance_price
-                    tp_price = entry_price - (distance_price * 0.5)
+                    tp_price = entry_price - (distance_price * 1.1)
                     
                     for idx, row in future_data.iterrows():
                         if row['time'] >= force_close_time: break # Order Expired
@@ -130,29 +132,31 @@ class LondonNYBacktester:
                             for t_idx, t_row in trade_data.iterrows():
                                 if t_row['time'] >= force_close_time:
                                     # Forced Close at 02:00
-                                    self.record_trade(entry_time, "SELL", entry_price, t_row['open'], (entry_price - t_row['open']) / distance_price, "02:00 Close")
+                                    self.record_trade(entry_time, t_row['time'], "SELL", f"SetUp {'1' if fibo == 0.618 else '2'} ({fibo*100}%)", entry_price, t_row['open'], (entry_price - t_row['open']) / distance_price, "02:00 Close")
                                     closed = True
                                     break
                                 elif t_row['high'] >= sl_price:
-                                    self.record_trade(entry_time, "SELL", entry_price, sl_price, -1.0, f"Fibo {fibo} SL")
+                                    self.record_trade(entry_time, t_row['time'], "SELL", f"SetUp {'1' if fibo == 0.618 else '2'} ({fibo*100}%)", entry_price, sl_price, -1.0, "SL")
                                     closed = True
                                     break
                                 elif t_row['low'] <= tp_price:
-                                    self.record_trade(entry_time, "SELL", entry_price, tp_price, 1.0, f"Fibo {fibo} TP")
+                                    self.record_trade(entry_time, t_row['time'], "SELL", f"SetUp {'1' if fibo == 0.618 else '2'} ({fibo*100}%)", entry_price, tp_price, 1.1, "TP")
                                     closed = True
                                     break
                             if not closed and not trade_data.empty:
                                 last_row = trade_data.iloc[-1]
-                                self.record_trade(entry_time, "SELL", entry_price, last_row['close'], (entry_price - last_row['close']) / distance_price, "End of History")
+                                self.record_trade(entry_time, last_row['time'], "SELL", f"SetUp {'1' if fibo == 0.618 else '2'} ({fibo*100}%)", entry_price, last_row['close'], (entry_price - last_row['close']) / distance_price, "End of History")
                             break
 
-    def record_trade(self, time, type, entry, exit, profit_factor, comment):
+    def record_trade(self, entry_time, exit_time, type, setup, entry, exit, profit_factor, comment):
         risk_amount = self.balance * (self.risk_percent / 100)
         profit = risk_amount * profit_factor
         self.balance += profit
         self.trades.append({
-            "time": time,
+            "entry_time": entry_time,
+            "exit_time": exit_time,
             "type": type,
+            "setup": setup,
             "entry": entry,
             "exit": exit,
             "profit": profit,
@@ -172,7 +176,8 @@ if __name__ == "__main__":
         backtester.run(data)
         print(f"Backtest Finished. Total trades: {len(backtester.trades)}", flush=True)
         print(f"Final Balance: ${backtester.balance:.2f}", flush=True)
-        logger = LogProcessor(backtester.trades)
+        logger = LogProcessor(backtester.trades, start_hour=backtester.start_hour, close_hour=backtester.close_hour)
         logger.export_to_csv("london_ny_backtest.csv")
         logger.create_performance_graph("london_ny_performance.png")
+        logger.generate_summary_report()
     backtester.shutdown()
