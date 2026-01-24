@@ -69,8 +69,16 @@ class LogProcessor:
             return None
         
         total_orders = len(df)
-        won_trades = df[df['comment'] == 'TP']
-        lost_trades = df[df['comment'] == 'SL']
+        
+        # Robust check for wins/losses across different versions
+        # Wins: Comment contains TP or Partial, or Profit > 0
+        won_trades = df[(df['comment'].str.contains("TP", na=False)) | 
+                        (df['comment'].str.contains("Partial", na=False)) |
+                        (df['profit'] > 0)]
+        
+        # Losses: Comment contains SL and profit <= 0
+        lost_trades = df[(df['comment'].str.contains("SL", na=False)) & (df['profit'] <= 0)]
+        
         forced_trades = df[df['comment'].str.contains("Close", na=False)]
         
         win_rate = (len(won_trades) / total_orders * 100) if total_orders > 0 else 0
@@ -108,6 +116,45 @@ class LogProcessor:
                 recovery_days = max(recovery_days, duration)
                 peak_time = df_copy.loc[i, 'entry_time']
 
+        # Max Lose Stack (Consecutive SL) and ATR Analysis
+        max_lost_stack = 0
+        current_lost_stack = 0
+        current_stack_indices = []
+        max_stack_indices = []
+        
+        for idx, row in df.iterrows():
+            comment = str(row['comment'])
+            if "SL" in comment and row['profit'] <= 0:
+                current_lost_stack += 1
+                current_stack_indices.append(idx)
+                if current_lost_stack > max_lost_stack:
+                    max_lost_stack = current_lost_stack
+                    max_stack_indices = current_stack_indices.copy()
+            else:
+                current_lost_stack = 0
+                current_stack_indices = []
+
+        avg_atr_all = df['atr'].mean() if 'atr' in df.columns else 0
+        avg_atr_max_lost = 0
+        avg_atr_others = 0
+        
+        avg_adx_all = df['adx'].mean() if 'adx' in df.columns else 0
+        avg_adx_max_lost = 0
+        avg_adx_others = 0
+        
+        if max_stack_indices:
+            if 'atr' in df.columns:
+                avg_atr_max_lost = df.loc[max_stack_indices, 'atr'].mean()
+            if 'adx' in df.columns:
+                avg_adx_max_lost = df.loc[max_stack_indices, 'adx'].mean()
+                
+            others_df = df.drop(index=max_stack_indices)
+            if not others_df.empty:
+                if 'atr' in df.columns:
+                    avg_atr_others = others_df['atr'].mean()
+                if 'adx' in df.columns:
+                    avg_adx_others = others_df['adx'].mean()
+
         return {
             "Total Orders": total_orders,
             "WinRate (%)": round(win_rate, 2),
@@ -118,6 +165,11 @@ class LogProcessor:
             "Avg Duration (Hrs)": round(avg_duration, 2),
             "Risk Per Reward": rr_display,
             "Max Drawdown (%)": round(max_dd, 2),
+            "Max Lose Stack": max_lost_stack,
+            "Avg ATR (Max Lose)": round(avg_atr_max_lost * 100000, 2) if avg_atr_max_lost else 0,
+            "Avg ATR (Others)": round(avg_atr_others * 100000, 2) if avg_atr_others else 0,
+            "Avg ADX (Max Lose)": round(avg_adx_max_lost, 2),
+            "Avg ADX (Others)": round(avg_adx_others, 2),
             "Max Recovery (Days)": recovery_days,
             "Expected Value": round(expected_value, 2)
         }
@@ -142,8 +194,8 @@ class LogProcessor:
                 "Forced Close Hour": to_thai_time(self.close_hour)
             },
             "Overall": self.calculate_metrics(df),
-            "SetUp1 (61.8%)": self.calculate_metrics(df[df['setup'].str.contains("61.8")]),
-            "SetUp2 (78.6%)": self.calculate_metrics(df[df['setup'].str.contains("78.6")])
+            "SetUp1 (61.8%)": self.calculate_metrics(df[df['setup'].str.contains("61.8|0.618", na=False)]),
+            "SetUp2 (78.6%)": self.calculate_metrics(df[df['setup'].str.contains("78.6|0.786", na=False)])
         }
         
         self.display_report(report)
