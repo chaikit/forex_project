@@ -1,13 +1,13 @@
 [
     {
-        "Timestamp": "2026-01-24 22:48:56",
+        "Timestamp": "2026-01-26 13:15:10",
         "Strategy Settings": {
             "Trigger Setup Hour": "12:00 (17:00 Thai)",
             "Forced Close Hour": "00:00 (05:00 Thai)"
         },
         "Overall": {
             "Total Orders": 1159,
-            "WinRate (%)": 0.0,
+            "WinRate (%)": 57.72,
             "Normal Close (%)": 99.65,
             "Forced Close (%)": 0.35,
             "Avg Trigger Hour": "14:03",
@@ -15,19 +15,53 @@
             "Avg Duration (Hrs)": 0.53,
             "Risk Per Reward": "1:4.5",
             "Max Drawdown (%)": 9.56,
-            "Max Lose Stack": 0,
+            "Max Lose Stack": 9,
             "Avg ATR (Max Lose)": 0,
             "Avg ATR (Others)": 0,
-            "Avg ADX (Max Lose)": 0,
-            "Avg ADX (Others)": 0,
+            "Avg ADX (Max Lose)": 0.0,
+            "Avg ADX (Others)": 0.0,
             "Max Recovery (Days)": 58,
             "Expected Value": 104698.95
         },
-        "SetUp1 (61.8%)": null,
-        "SetUp2 (78.6%)": null
+        "SetUp1 (61.8%)": {
+            "Total Orders": 624,
+            "WinRate (%)": 54.97,
+            "Normal Close (%)": 99.68,
+            "Forced Close (%)": 0.32,
+            "Avg Trigger Hour": "13:43",
+            "Avg TP/SL Hour": "N/A",
+            "Avg Duration (Hrs)": 0.52,
+            "Risk Per Reward": "1:4.5",
+            "Max Drawdown (%)": 8.65,
+            "Max Lose Stack": 10,
+            "Avg ATR (Max Lose)": 0,
+            "Avg ATR (Others)": 0,
+            "Avg ADX (Max Lose)": 0.0,
+            "Avg ADX (Others)": 0.0,
+            "Max Recovery (Days)": 55,
+            "Expected Value": 96368.6
+        },
+        "SetUp2 (78.6%)": {
+            "Total Orders": 535,
+            "WinRate (%)": 60.93,
+            "Normal Close (%)": 99.63,
+            "Forced Close (%)": 0.37,
+            "Avg Trigger Hour": "14:27",
+            "Avg TP/SL Hour": "N/A",
+            "Avg Duration (Hrs)": 0.55,
+            "Risk Per Reward": "1:4.5",
+            "Max Drawdown (%)": 9.11,
+            "Max Lose Stack": 7,
+            "Avg ATR (Max Lose)": 0,
+            "Avg ATR (Others)": 0,
+            "Avg ADX (Max Lose)": 0.0,
+            "Avg ADX (Others)": 0.0,
+            "Max Recovery (Days)": 58,
+            "Expected Value": 114415.08
+        }
     },
     {
-        "Timestamp": "2026-01-24 22:59:52",
+        "Timestamp": "2026-01-26 13:28:19",
         "Strategy Settings": {
             "Trigger Setup Hour": "12:00 (17:00 Thai)",
             "Forced Close Hour": "00:00 (05:00 Thai)"
